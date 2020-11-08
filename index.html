@@ -4,20 +4,68 @@
 	<title>Franckyi rocks!</title>
 </head>
 <body>
-	<div class="bg"></div>
+	<div id="bg"></div>
+	<audio id="youtube" controls></audio>
 	<style type="text/css">
 		body, html {
 		  height: 100%;
 		  margin: 0;
 		}
 
-		.bg {
+		#bg {
 		  background-image: url("catvibe.gif");
 		  height: 100%;
 		  background-position: center;
 		  background-repeat: no-repeat;
 		  background-size: cover;
 		}
+
+		audio {
+			display: none;
+		}
 	</style>
+	<script type="text/javascript">
+		// YouTube video ID
+		const videoID = "zh9gFmvDC3o";
+        const youtubeAudio = document.getElementById('youtube');
+
+		// Fetch video info (using a proxy if avoid CORS errors)
+		fetch('https://cors-anywhere.herokuapp.com/' + "https://www.youtube.com/get_video_info?video_id=" + videoID).then(response => {
+		  if (response.ok) {
+		    response.text().then(data => {
+		      
+		      // parse response to find audio info
+		      let ytData = parse_str(data);
+		      let getAdaptiveFormats = JSON.parse(ytData.player_response).streamingData.adaptiveFormats;
+		      let findAudioInfo = getAdaptiveFormats.findIndex(obj => obj.audioQuality);
+		      
+		      // get the URL for the audio file
+		      let audioURL = getAdaptiveFormats[findAudioInfo].url;
+		      
+		      // update the <audio> element src
+		      youtubeAudio.src = audioURL;
+		      youtubeAudio.currentTime = 41;
+		    });
+		  }
+		});
+
+		function parse_str(str) {
+		  return str.split('&').reduce(function(params, param) {
+		    var paramSplit = param.split('=').map(function(value) {
+		      return decodeURIComponent(value.replace('+', ' '));
+		    });
+		    params[paramSplit[0]] = paramSplit[1];
+		    return params;
+		  }, {});
+		}
+
+        document.getElementById('bg').onclick = function() {
+            if (youtubeAudio.paused) {
+                youtubeAudio.play();
+            } else {
+                youtubeAudio.pause();
+            }
+        }
+	</script>
 </body>
 </html>
