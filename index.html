@@ -59,12 +59,19 @@
 		  }, {});
 		}
 
-        document.getElementById('bg').onclick = function() {
+        const bg = document.getElementById('bg');
+        bg.onclick = function() {
             if (youtubeAudio.paused) {
                 youtubeAudio.play();
             } else {
                 youtubeAudio.pause();
             }
+        }
+        bg.onwheel = function(e) {
+            let n = youtubeAudio.volume - e.deltaY / 60;
+            if (n < 0) n = 0;
+            else if (n > 1) n = 1;
+            youtubeAudio.volume = n;
         }
 	</script>
 </body>
